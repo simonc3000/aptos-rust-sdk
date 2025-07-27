@@ -11,6 +11,67 @@ use reqwest::Client as ReqwestClient;
 use serde::de::DeserializeOwned;
 use url::Url;
 
+#[derive(Debug, Clone, Default)]
+pub struct AccountResourcesQuoteConfig {
+    /// The ledger version to query at
+    pub ledger_version: Option<u64>,
+    /// Maximum number of resources to return
+    pub limit: Option<u32>,
+    /// The resource type to start from (for pagination)
+    pub start: Option<String>,
+}
+
+impl AccountResourcesQuoteConfig {
+    /// Create a new config with default values
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the ledger version
+    pub fn with_ledger_version(mut self, version: u64) -> Self {
+        self.ledger_version = Some(version);
+        self
+    }
+
+    /// Set the limit
+    pub fn with_limit(mut self, limit: u32) -> Self {
+        self.limit = Some(limit);
+        self
+    }
+
+    /// Set the start resource type
+    pub fn with_start(mut self, start: String) -> Self {
+        self.start = Some(start);
+        self
+    }
+
+    /// Apply query parameters to a URL
+    fn apply_to_url(&self, mut url: Url) -> Url {
+        let mut query_pairs = Vec::new();
+
+        if let Some(version) = self.ledger_version {
+            query_pairs.push(("ledger_version", version.to_string()));
+        }
+
+        if let Some(limit_val) = self.limit {
+            query_pairs.push(("limit", limit_val.to_string()));
+        }
+
+        if let Some(start_val) = &self.start {
+            query_pairs.push(("start", start_val.clone()));
+        }
+
+        if !query_pairs.is_empty() {
+            let mut query = url.query_pairs_mut();
+            for (key, value) in query_pairs {
+                query.append_pair(key, &value);
+            }
+        }
+
+        url
+    }
+}
+
 /// The Aptos client used for interacting with the blockchain
 #[derive(Debug, Clone)]
 pub struct AptosFullnodeClient {
@@ -78,6 +139,16 @@ impl AptosFullnodeClient {
     ) -> AptosResult<FullnodeResponse<Vec<AccountResource>>> {
         let url = self.build_rest_path(&format!("v1/accounts/{}/resources", address))?;
         self.rest_get(url).await
+    }
+
+    pub async fn get_account_resources_with_config(
+        &self,
+        address: String,
+        config: AccountResourcesQuoteConfig,
+    ) -> AptosResult<FullnodeResponse<Vec<AccountResource>>> {
+        let url = self.build_rest_path(&format!("v1/accounts/{}/resources", address))?;
+        let url_with_params = config.apply_to_url(url);
+        self.rest_get(url_with_params).await
     }
 
     pub async fn get_account_balance(

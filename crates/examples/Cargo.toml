@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+tokio = { version = "1.41.0", features = ["full"] }
 aptos-rust-sdk = { workspace = true }
 aptos-rust-sdk-types = { workspace = true }
 aptos-crypto = { workspace = true }
@@ -20,3 +21,7 @@ tokio = { workspace = true }
 [[bin]]
 name = "type_parsing_example"
 path = "src/type_parsing_example.rs"
+
+[[bin]]
+name = "quote_example"
+path = "src/quote_example.rs"
