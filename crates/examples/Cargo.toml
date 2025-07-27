@@ -25,3 +25,7 @@ path = "src/type_parsing_example.rs"
 [[bin]]
 name = "quote_example"
 path = "src/quote_example.rs"
+
+[[bin]]
+name = "view_example"
+path = "src/view_example.rs"

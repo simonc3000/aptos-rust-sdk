@@ -112,6 +112,31 @@ impl AptosFullnodeClient {
         self.rest_get(url).await
     }
 
+    pub async fn get_view_function(
+        &self,
+        function: &str,
+        type_arguments: Vec<&str>,
+        arguments: Vec<&str>,
+    ) -> AptosResult<FullnodeResponse<serde_json::Value>> {
+        let url = self.build_rest_path("v1/view")?;
+
+        let response = self
+            .rest_client
+            .post(url)
+            .header(ACCEPT, JSON)
+            .header(CONTENT_TYPE, JSON)
+            .json(&serde_json::json!({
+                "function": function,
+                "type_arguments": type_arguments,
+                "arguments": arguments
+            }))
+            .send()
+            .await?;
+
+        let parsable_response = ParsableResponse(response);
+        parsable_response.parse_response().await
+    }
+
     /// Retrieve the blockchain state
     pub async fn get_state(&self) -> AptosResult<State> {
         let url = self.build_rest_path("v1")?;
