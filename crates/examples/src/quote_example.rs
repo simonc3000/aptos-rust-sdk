@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             AccountResourcesQuoteConfig::new().with_limit(10000),
         )
         .await?;
-    println!("Total resources: {}", resources.inner().len());
+    println!("Total resources: {:?}", resources.inner());
 
     Ok(())
 }
