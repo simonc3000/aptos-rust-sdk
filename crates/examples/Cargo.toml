@@ -29,3 +29,8 @@ path = "src/quote_example.rs"
 [[bin]]
 name = "view_example"
 path = "src/view_example.rs"
+
+
+[[bin]]
+name = "account_example"
+path = "src/account_example.rs"

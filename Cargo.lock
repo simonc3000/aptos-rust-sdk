@@ -166,6 +166,7 @@ dependencies = [
  "hex",
  "libsecp256k1",
  "rand 0.7.3",
+ "rand_core 0.9.3",
  "reqwest",
  "serde",
  "serde_json",
