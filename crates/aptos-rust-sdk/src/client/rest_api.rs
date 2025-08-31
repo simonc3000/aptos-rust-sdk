@@ -116,7 +116,7 @@ impl AptosFullnodeClient {
         &self,
         function: &str,
         type_arguments: Vec<&str>,
-        arguments: Vec<&str>,
+        arguments: Vec<serde_json::Value>,
     ) -> AptosResult<FullnodeResponse<serde_json::Value>> {
         let url = self.build_rest_path("v1/view")?;
 
