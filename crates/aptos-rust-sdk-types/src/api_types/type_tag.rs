@@ -1,6 +1,7 @@
 use crate::api_types::address::AccountAddress;
 use crate::api_types::module_id::ModuleId;
 use crate::api_types::parser;
+use crate::api_types::safe_serialize;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use std::str::FromStr;
@@ -24,9 +25,21 @@ pub enum TypeTag {
     #[serde(rename = "signer", alias = "Signer")]
     Signer,
     #[serde(rename = "vector", alias = "Vector")]
-    Vector(Box<TypeTag>),
+    Vector(
+        #[serde(
+            serialize_with = "safe_serialize::type_tag_recursive_serialize",
+            deserialize_with = "safe_serialize::type_tag_recursive_deserialize"
+        )]
+        Box<TypeTag>,
+    ),
     #[serde(rename = "struct", alias = "Struct")]
-    Struct(Box<StructTag>),
+    Struct(
+        #[serde(
+            serialize_with = "safe_serialize::type_tag_recursive_serialize",
+            deserialize_with = "safe_serialize::type_tag_recursive_deserialize"
+        )]
+        Box<StructTag>,
+    ),
 
     // NOTE: Added in bytecode version v6, do not reorder!
     #[serde(rename = "u16", alias = "U16")]
@@ -35,6 +48,14 @@ pub enum TypeTag {
     U32,
     #[serde(rename = "u256", alias = "U256")]
     U256,
+    // NOTE: added in bytecode version v8
+    // Function(
+    //     #[serde(
+    //         serialize_with = "safe_serialize::type_tag_recursive_serialize",
+    //         deserialize_with = "safe_serialize::type_tag_recursive_deserialize"
+    //     )]
+    //     Box<FunctionTag>,
+    // ),
 }
 
 impl TypeTag {
@@ -62,6 +83,7 @@ impl TypeTag {
             Signer => "signer".to_owned(),
             Vector(t) => format!("vector<{}>", t.to_canonical_string()),
             Struct(s) => s.to_canonical_string(),
+            // Function(f) => f.to_canonical_string(),
         }
     }
 }

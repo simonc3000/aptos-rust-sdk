@@ -27,3 +27,7 @@ libsecp256k1 = { workspace = true }
 tiny-keccak = { workspace = true }
 serde_bytes = { workspace = true }
 nom = "7.1"
+ethnum = "1.5.2"
+uint = "0.10.0"
+num.workspace = true
+primitive-types = "0.13.1"

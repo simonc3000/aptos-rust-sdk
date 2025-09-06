@@ -1,4 +1,5 @@
-use crate::api_types::address::AccountAddress;
+use std::fmt;
+
 use crate::api_types::chain_id::ChainId;
 use crate::api_types::event::ContractEvent;
 use crate::api_types::hash::HashValue;
@@ -7,6 +8,7 @@ use crate::api_types::numbers::U64;
 use crate::api_types::transaction_authenticator::TransactionAuthenticator;
 use crate::api_types::type_tag::TypeTag;
 use crate::api_types::write_set::WriteSet;
+use crate::api_types::{address::AccountAddress, u256};
 use anyhow::Error;
 use aptos_crypto::compat::Sha3_256;
 use aptos_crypto_derive::{BCSCryptoHash, CryptoHasher};
@@ -164,8 +166,9 @@ pub enum TransactionArgument {
     // NOTE: Added in bytecode version v6, do not reorder!
     U16(u16),
     U32(u32),
-    // FIXME: import u256 library, or handle properly
-    // U256(u256::U256),
+    U256(u256::U256),
+    // Note: Gated by feature flag ALLOW_SERIALIZED_SCRIPT_ARGS
+    Serialized(#[serde(with = "serde_bytes")] Vec<u8>),
 }
 
 #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
